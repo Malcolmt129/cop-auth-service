@@ -15,14 +15,13 @@ export class UserService {
          * SELECT id, username, password FROM 'user'
          * WHERE user.username == {username}
          */
-        const users = await this.userRepo.find({
+        return await this.userRepo.findOne({
             select: ["id", "username", "password"],
             where: { username: username }
         });
-        return users[0];
     }
 
     async insertOne(username: string, password: string): Promise<void> {
-        await this.userRepo.save({username: username, password: password});
+        await this.userRepo.create({username: username, password: password});
     }
 }

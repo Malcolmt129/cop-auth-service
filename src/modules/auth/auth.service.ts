@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from '../user/user.service';
 import * as bcrypt from 'bcrypt';
@@ -21,7 +21,6 @@ export class AuthService {
     }
 
     async login(user: Partial<User>) { // change type to be User entity
-        console.log(user);
         const payload = { username: user.username, sub: user.id };
         return { access_token: this.jwtService.sign(payload) }; // add salt
     }
@@ -29,7 +28,7 @@ export class AuthService {
     async register(username: string, password: string) {
         let user = await this.userService.findOne(username);
         if (user) {
-            throw Error("BAD_REQUEST, User already exsits..."); // change to add status code, look to ../shared/Errors.ts
+            throw new BadRequestException(`Bad Request, ${username} already in use`);
         }
         const salt = await bcrypt.genSalt(10); // 10 should be replaced with a CSPRNG
         const hash = await bcrypt.hash(password, salt);

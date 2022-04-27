@@ -30,6 +30,7 @@ jobs:
       tag:
         type: string
     steps:
+      - checkout
       - run:
           name: "Check semantic version for ${CIRCLE_PROJECT_REPONAME}"
           command: >

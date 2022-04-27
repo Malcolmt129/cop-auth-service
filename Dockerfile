@@ -17,6 +17,8 @@ RUN npm install
 
 RUN npm run build
 
+RUN npm rebuild bcrypt --build-from-source
+
 RUN npm prune --production
 
 

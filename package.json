@@ -1,6 +1,6 @@
 {
   "name": "cop-auth-service",
-  "version": "0.0.1",
+  "version": "1.0.1",
   "description": "",
   "author": "",
   "private": true,
@@ -47,7 +47,7 @@
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^7.2.0",
-    "typeorm": "^0.3.5"
+    "typeorm": "^0.2.45"
   },
   "devDependencies": {
     "@nestjs/cli": "^8.0.0",

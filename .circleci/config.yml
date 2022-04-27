@@ -1,0 +1,92 @@
+version: 2.1
+
+orbs: 
+  do-cli: digitalocean/cli@0.1.1
+  docker: circleci/docker@2.0.3
+
+executors:
+  node-executor:
+    working_directory: ~/cop-auth-service
+    docker:
+      - image: cimg/node:17.2.0
+
+jobs:
+  lint-project:
+    executor: node-executor
+    steps:
+      - checkout
+      - run: 
+          command: npm install
+      - run:
+          name: ESLint Project
+          command: npm run lint
+      - run:
+          name: Prettier
+          command: npm run format
+
+  check-semver:
+    executor: node-executor
+    parameters:
+      tag:
+        type: string
+    steps:
+      - run:
+          name: "Check semantic version for ${CIRCLE_PROJECT_REPONAME}"
+          command: >
+            if curl --silent -f -lSL "https://index.docker.io/v1/repositories/0717080/${CIRCLE_PROJECT_REPONAME}/tags/<<parameters.tag>>" > /dev/null; then
+                echo "<<parameters.tag>> already exists in the ${CIRCLE_PROJECT_REPONAME} on dockerhub"
+                exit 1
+            fi
+  
+  deploy-digitalocean:
+    executor: do-cli/default
+    steps:
+      - do-cli/install
+      - do-cli/initialize:
+          digitalocean-access-token: DIGITAL_OCEAN_ACCESS_TOKEN
+      - run:
+          name: Create Digital Ocean Deployment
+          command: >
+            doctl apps create-deployment $DIGITAL_OCEAN_APP_ID --verbose true
+
+workflows:
+  test-lint-project:
+    jobs:
+      - lint-project:
+          filters:
+            branches:
+              ignore:
+                - /main/
+
+  deploy-production:
+    jobs:
+      - check-semver:
+          tag: $(cat ./package.json | grep version | head -1 | awk -F= "{ print $2 }" | sed 's/[version:,\",]//g' | tr -d '[[:space:]]')
+      
+      - docker/publish:
+          requires:
+            - check-semver
+          context:
+            - DOCKERHUB
+          image: "0717080/$CIRCLE_PROJECT_REPONAME"
+          tag: $(cat ./package.json | grep version | head -1 | awk -F= "{ print $2 }" | sed 's/[version:,\",]//g' | tr -d '[[:space:]]')
+          filters:
+            branches:
+              only: /main/
+
+      - docker/publish:
+          name: publish-docker-prod
+          context:
+            - DOCKERHUB
+          image: "0717080/$CIRCLE_PROJECT_REPONAME"
+          tag: latest
+          filters:
+            branches:
+              only: /main/
+
+      - deploy-digitalocean:
+          requires:
+            - publish-docker-prod
+          filters:
+            branches:
+              only: /main/

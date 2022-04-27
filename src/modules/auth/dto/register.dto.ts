@@ -1,15 +1,16 @@
 import { IsString, IsNotEmpty, IsDefined } from "class-validator";
 
 export class RegisterDto {
+    
     @IsString()
     @IsNotEmpty()
     @IsDefined()
-    public username: string;
+    username: string
 
     @IsString()
     @IsNotEmpty()
     @IsDefined()
-    public password: string;
+    password: string
 
     // add more attributes as needed ...
 }

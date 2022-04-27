@@ -22,6 +22,7 @@ export class UserService {
     }
 
     async insertOne(username: string, password: string): Promise<void> {
-        await this.userRepo.create({username: username, password: password});
+        const user_entity = await this.userRepo.create({username: username, password: password});
+        await this.userRepo.save(user_entity);
     }
 }

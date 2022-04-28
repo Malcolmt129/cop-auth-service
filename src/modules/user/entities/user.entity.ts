@@ -23,5 +23,5 @@ export class User {
         type: "text",
         nullable: true
     })
-    roles: string;
+    role: string;
 }

@@ -18,4 +18,10 @@ export class User {
         nullable: false
     })
     password: string;
+
+    @Column({
+        type: "text",
+        nullable: true
+    })
+    roles: string;
 }

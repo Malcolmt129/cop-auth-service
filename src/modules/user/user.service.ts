@@ -41,7 +41,7 @@ export class UserService {
         await this.userRepo.update(id, { role: updateUserRoleDto.role });
     }
 
-    async findUserRole(id: string, username: string): Promise<Partial<User>> {
+    async findUserRole(id: string): Promise<Partial<User>> {
         /**
          * 
          * SELECT id, role

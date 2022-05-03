@@ -41,7 +41,7 @@ COPY --chown=node:node --from=build /usr/src/app/node_modules /usr/src/app/node_
 COPY --chown=node:node --from=build /usr/src/app/package.json /usr/src/app/package.json
 
 RUN chmod -w /usr/src/app
-COPY .env .
+
 USER node
 
 CMD ["dumb-init", "node", "-r", "./dist/main.js"]

@@ -20,7 +20,8 @@ export class User {
     password: string;
 
     @Column({
-        type: "text",
+        type: "varchar",
+        length: 45,
         nullable: true
     })
     role: string;
